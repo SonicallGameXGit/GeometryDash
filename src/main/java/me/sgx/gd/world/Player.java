@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 public abstract class Player extends Drawable {
 	protected static final int CUBE_TEXTURE = Texture.create("res/textures/cube.png", GL11.GL_NEAREST);
 	protected static final int SHIP_TEXTURE = Texture.create("res/textures/ship.png", GL11.GL_NEAREST);
+	protected static final int BALL_TEXTURE = Texture.create("res/textures/ball.png", GL11.GL_NEAREST);
 
 	public float speed = 1.0f, physicsSpeed = 1.0f;
 

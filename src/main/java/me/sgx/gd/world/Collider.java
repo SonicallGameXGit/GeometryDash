@@ -22,9 +22,7 @@ public class Collider {
 		Vector2f maxB = new Vector2f(minB).add(new Vector2f(otherCollider.size).mul(otherTransform.scale));
 
 		if(maxA.x() <= minB.x() || minA.x() >= maxB.x()) return false;
-		if(maxA.y() <= minB.y() || minA.y() >= maxB.y()) return false;
-
-		return true;
+		return !(maxA.y() <= minB.y()) && !(minA.y() >= maxB.y());
 	}
 	public float clipVelocityY(Transform thisTransform, Transform otherTransform, Collider otherCollider, float velocity, ClipType clipType) {
 		Vector2f minA = new Vector2f(thisTransform.position).add(new Vector2f(position).mul(thisTransform.scale));

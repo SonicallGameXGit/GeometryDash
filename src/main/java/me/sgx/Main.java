@@ -7,6 +7,7 @@ import me.sgx.engine.graphics.Window;
 import me.sgx.engine.graphics.shader.ShaderProgram;
 import me.sgx.engine.graphics.texture.Texture;
 import me.sgx.engine.io.Keyboard;
+import me.sgx.engine.io.Mouse;
 import me.sgx.engine.math.MathUtil;
 import me.sgx.engine.math.Time;
 import me.sgx.gd.graphics.Camera;
@@ -78,6 +79,9 @@ public class Main {
 		Window.create(1920, 1080, "Geometry Dash", true, false, false);
 		Window.initImGui(true);
 
+		Keyboard.initialize();
+		Mouse.initialize();
+
 		AudioSystem.initialize();
 
 		Drawable.initialize();
@@ -104,15 +108,17 @@ public class Main {
 		int fps = 0;
 		float fpsUpdateTime = 0.0f;
 
-		ImInt playerType = new ImInt(0);
-		String[] types = new String[] { "Cube", "Ship" };
+		ImInt playerType = new ImInt(2);
+		String[] types = new String[] { "Cube", "Ship", "Ball" };
 
 		Time time = new Time();
 		while(Window.isRunning()) {
 			Window.update();
 			time.update();
 
-			//Thread.sleep(15);
+			//Thread.sleep(24);
+
+			if(Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_F)) System.out.println("F");
 
 			fps++;
 			fpsUpdateTime += time.getActualDelta();
@@ -157,8 +163,10 @@ public class Main {
 			if(ImGui.combo("Mode", playerType, types)) {
 				if(playerType.get() == 0) {
 					player = new CubePlayer(player);
-				} else {
+				} else if(playerType.get() == 1) {
 					player = new ShipPlayer(player);
+				} else {
+					player = new BallPlayer(player);
 				}
 			}
 
