@@ -1,8 +1,8 @@
 package me.sgx;
 
 import imgui.ImGui;
+import imgui.type.ImInt;
 import me.sgx.engine.audio.AudioSystem;
-import me.sgx.engine.audio.SoundSource;
 import me.sgx.engine.graphics.Window;
 import me.sgx.engine.graphics.shader.ShaderProgram;
 import me.sgx.engine.graphics.texture.Texture;
@@ -22,40 +22,72 @@ import java.util.Random;
 public class Main {
 	private static long seed = new Random().nextLong();
 
-	private static void generateWorld(World world, int offset) {
-		long seed = Main.seed + offset * 29423L;
-		Random random = new Random(seed);
-		for(int x = -5; x <= 5; x++) {
-			world.blocks.add(new Block((byte) 0, new Transform(new Vector2f(x + offset * 11.0f, offset + random.nextInt(0, 2)), new Vector2f(1.0f), 0.0f)));
-
-			/*int height = (int) Math.floor(Math.random() * 3.0);
-			for(int y = 0; y < height; y++) {
-				world.blocks.add(new Block((byte) 0, new Transform(new Vector2f(x + i * 11.0f, y + 1), new Vector2f(1.0f), 0.0f)));
-			}*/
-
-			if(new Random(seed + x).nextFloat() < 0.1) world.blocks.add(new Block((byte) 1, new Transform(new Vector2f(x + offset * 11.0f, offset + 1.0f), new Vector2f(1.0f), 0.0f)));
-			if(new Random(seed + x + 328).nextFloat() < 0.1) world.blocks.add(new Block((byte) 1, new Transform(new Vector2f(x + offset * 11.0f, offset + 4.0f), new Vector2f(1.0f), 180.0f)));
+	private record Structure(byte[][] info) {
+		public void placeAt(World world, Vector2f position) {
+			for(int y = 0; y < info.length; y++)
+				for(int x = 0; x < info[y].length; x++)
+					if(info[y][x] > -1) world.blocks.add(new Block(info[y][x], new Transform(new Vector2f(x, info.length - 1.0f - y).add(position), new Vector2f(1.0f), 0.0f)));
 		}
 	}
-	public static void main(String[] args) {
+
+	private static final Structure michigunSpikes = new Structure(new byte[][] {
+			{ 1, 1, 1 }
+	});
+	private static final Structure madnessPipes = new Structure(new byte[][] {
+			{ -1, -1, -1, -1, -1, -1, 0 },
+			{ -1, -1, -1,  0, -1, -1, 0 },
+			{  0, -1, -1,  0, -1, -1, 0 },
+			{  0, -1, -1,  0, -1, -1, 0 }
+	});
+	private static final Structure gapePipe = new Structure(new byte[][] {
+			{  0 },
+			{  1 },
+			{ -1 },
+			{  1 },
+			{  0 }
+	});
+
+	private static void generateWorld(World world, int offset) {
+		long seed = Main.seed + offset * 29423L;
+		System.out.println("Seed: " + Main.seed);
+
+		int passBuffer = 0;
+		for(int x = -5; x <= 5; x++) {
+			Vector2f position = new Vector2f(x + offset * 11.0f, offset);
+			world.blocks.add(new Block((byte) 0, new Transform(position, new Vector2f(1.0f), 0.0f)));
+			world.blocks.add(new Block((byte) 0, new Transform(new Vector2f(position).add(0.0f, 6.0f), new Vector2f(1.0f), 180.0f)));
+
+			if(x < -3) continue;
+			if(new Random(seed + x * 32893).nextFloat() <= 0.015f && passBuffer <= 0) {
+				michigunSpikes.placeAt(world, new Vector2f(0.0f, 1.0f).add(position));
+				passBuffer = michigunSpikes.info()[0].length;
+			}
+			if(new Random(seed + x * 32893 + 3724).nextFloat() <= 0.01f && passBuffer <= 0) {
+				madnessPipes.placeAt(world, new Vector2f(0.0f, 1.0f).add(position));
+				passBuffer = madnessPipes.info()[0].length;
+			}
+			if(new Random(seed + x * 32893 + 39240).nextFloat() <= 0.03f && passBuffer <= 0) {
+				gapePipe.placeAt(world, new Vector2f(0.0f, 1.0f).add(position));
+				passBuffer = madnessPipes.info()[0].length;
+			}
+
+			passBuffer--;
+		}
+	}
+	public static void main(String[] args) throws InterruptedException {
 		Window.create(1920, 1080, "Geometry Dash", true, false, false);
 		Window.initImGui(true);
 
 		AudioSystem.initialize();
 
-		int music = AudioSystem.loadSound("res/music/847287.ogg");
-		SoundSource musicSource = new SoundSource();
-		musicSource.setSound(music);
-		//musicSource.play(1.0f, 1.0f, false);
-
 		Drawable.initialize();
 
 		GL11.glClearColor(0.23f, 0.63f, 1.0f, 1.0f);
 
-		BlockInfo.register(new BlockInfo(new Vector4f(0.0f, 0.0f, 0.125f, 0.125f), new Collider(new Vector2f(), new Vector2f(1.0f)), new Collider(new Vector2f(0.25f), new Vector2f(0.5f))));
-		BlockInfo.register(new BlockInfo(new Vector4f(0.125f, 0.0f, 0.125f, 0.125f), null, new Collider(new Vector2f(0.25f, 0.375f), new Vector2f(0.5f, 0.175f))));
+		BlockInfo.register(new BlockInfo(new Vector4f(0.0f, 0.0f, 0.125f, 0.125f), new Collider(new Vector2f(), new Vector2f(1.0f)), new Collider(new Vector2f(0.1f, 0.0f), new Vector2f(0.8f, 1.0f))));
+		BlockInfo.register(new BlockInfo(new Vector4f(0.125f, 0.0f, 0.125f, 0.125f), null, new Collider(new Vector2f(0.4f, 0.25f), new Vector2f(0.2f, 0.5f))));
 
-		World.initialize();
+		World.initialize("Electrodynamix");
 
 		World world = new World();
 		world.spawnPoint = new Vector2f(0.0f, 4.0f);
@@ -65,25 +97,25 @@ public class Main {
 
 		Camera camera = new Camera(new Vector2f(), new Vector2f(0.25f), 0.0f);
 
-		Player player = new Player(Texture.create("res/textures/player.png", GL11.GL_NEAREST));
-		player.info.speed = 8.5f;
-		player.info.gravity = 75.0f;
-		player.info.jumpHeight = 17.32f;
+		Player player = new CubePlayer();
+		player.speed = 8.5f;
 		player.transform.position.set(world.spawnPoint);
-		player.killCollider = new Collider(new Vector2f(0.25f), new Vector2f(0.5f));
-		player.info.coyoteTime = 0.15f;
-		player.info.jumpBufferTime = 0.15f;
 
 		int fps = 0;
 		float fpsUpdateTime = 0.0f;
+
+		ImInt playerType = new ImInt(0);
+		String[] types = new String[] { "Cube", "Ship" };
 
 		Time time = new Time();
 		while(Window.isRunning()) {
 			Window.update();
 			time.update();
 
+			//Thread.sleep(15);
+
 			fps++;
-			fpsUpdateTime += time.getDelta();
+			fpsUpdateTime += time.getActualDelta();
 			if(fpsUpdateTime >= 1.0f) {
 				fpsUpdateTime = 0.0f;
 
@@ -116,23 +148,29 @@ public class Main {
 				world.clear();
 				for(int i = -1; i <= 1; i++) generateWorld(world, lastOffset + i);
 			} else if(ImGui.button("Regenerate World")) {
-				world.clear();
 				seed = new Random().nextLong();
-
-				lastOffset = offset;
 
 				world.clear();
 				for(int i = -1; i <= 1; i++) generateWorld(world, lastOffset + i);
+			}
+
+			if(ImGui.combo("Mode", playerType, types)) {
+				if(playerType.get() == 0) {
+					player = new CubePlayer(player);
+				} else {
+					player = new ShipPlayer(player);
+				}
 			}
 
 			ImGui.end();
 
 			Window.imGuiEnd();
 
-			player.update(time, world);
+			player.update(time, world, camera);
+			world.update(time);
 
 			camera.position.x = player.transform.position.x() + 2.5f;
-			camera.position.y = MathUtil.lerp(camera.position.y(), Math.round(player.transform.position.y() / 2.0f) * 2.0f + 1.0f, 2.0f * time.getDelta());
+			camera.position.y = MathUtil.lerp(camera.position.y(), Math.round(player.transform.position.y() / 2.0f) * 2.0f, 2.0f * time.getDelta());
 
 			if(Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_F11)) Window.setFullscreen(!Window.isFullscreen());
 			if(Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_ESCAPE)) break;
@@ -143,6 +181,7 @@ public class Main {
 		Texture.clearAll();
 		ShaderProgram.clearAll();
 		AudioSystem.clearAll();
+		BlockInfo.clear();
 
 		Window.closeImGui();
 		Window.close();

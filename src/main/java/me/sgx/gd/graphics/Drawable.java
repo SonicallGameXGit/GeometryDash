@@ -50,14 +50,20 @@ public abstract class Drawable {
 
 	public abstract void render();
 
-	protected void render(Transform transform, Vector4f uv) {
-		worldShader.setUniform("transform", MathUtil.transform(new Vector3f(transform.position.x(), transform.position.y(), 0.0f), new Vector3f(transform.scale.x(), transform.scale.y(), 1.0f), new Vector3f(0.0f, 0.0f, transform.rotation)));
+	protected void render(Transform transform, Vector2f anchor, Vector4f uv) {
+		worldShader.setUniform("transform", MathUtil.transform(new Vector3f(transform.position.x(), transform.position.y(), 0.0f), new Vector3f(transform.scale.x(), transform.scale.y(), 1.0f), new Vector3f(0.0f, 0.0f, transform.rotation), new Vector3f(anchor.x(), anchor.y(), 0.0f)));
 		worldShader.setUniform("uv", uv);
 
 		mesh.render();
 	}
 	protected void render(Transform transform) {
-		render(transform, new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
+		render(transform, new Vector2f(), new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
+	}
+	protected void render(Transform transform, Vector2f anchor) {
+		render(transform, anchor, new Vector4f(0.0f, 0.0f, 1.0f, 1.0f));
+	}
+	protected void render(Transform transform, Vector4f uv) {
+		render(transform, new Vector2f(), uv);
 	}
 
 	public static Vector4f getBounds() {

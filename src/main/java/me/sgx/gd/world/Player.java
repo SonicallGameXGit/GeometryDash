@@ -1,115 +1,53 @@
 package me.sgx.gd.world;
 
-import me.sgx.engine.io.Keyboard;
-import me.sgx.engine.io.Mouse;
-import me.sgx.engine.math.MathUtil;
+import me.sgx.engine.graphics.texture.Texture;
 import me.sgx.engine.math.Time;
+import me.sgx.gd.graphics.Camera;
 import me.sgx.gd.graphics.Drawable;
 import org.joml.Vector2f;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 
-public class Player extends Drawable {
-	public final int texture;
-	public PlayerInfo info = new PlayerInfo();
+public abstract class Player extends Drawable {
+	protected static final int CUBE_TEXTURE = Texture.create("res/textures/cube.png", GL11.GL_NEAREST);
+	protected static final int SHIP_TEXTURE = Texture.create("res/textures/ship.png", GL11.GL_NEAREST);
+
+	public float speed = 1.0f, physicsSpeed = 1.0f;
 
 	public Transform transform = new Transform();
-	private final Vector2f velocity = new Vector2f();
+	protected Vector2f velocity = new Vector2f();
 
-	public Collider resolveCollider = new Collider(), killCollider = new Collider();
+	protected final Collider resolveCollider, killCollider;
 
-	private float coyoteTimer = 0.0f, jumpBufferTimer = 0.0f;
-	private boolean onGround = false, jumping = false;
-
-	public Player(int texture, Transform transform) {
+	private final int texture;
+	protected Player(int texture, Collider resolveCollider, Collider killCollider) {
 		this.texture = texture;
-		this.transform = transform;
+		this.resolveCollider = resolveCollider;
+		this.killCollider = killCollider;
 	}
-	public Player(int texture) {
-		this.texture = texture;
+
+	protected void copyFrom(Player origin) {
+		transform = origin.transform;
+		velocity = origin.velocity;
+
+		speed = origin.speed;
+		physicsSpeed = origin.physicsSpeed;
 	}
 
 	@Override
 	public void render() {
 		loadTexture(texture);
-		render(transform);
+		render(transform, getAnchor());
 	}
 
-	public void update(Time time, World world) {
-		control(time);
-		boolean onGround = resolveCollisionsAndGetOnGround(time, world);
-
-		if(onGround) {
-			this.onGround = true;
-			coyoteTimer = 0.0f;
-
-			transform.rotation = MathUtil.lerp(transform.rotation, Math.round(transform.rotation / 90.0f) * 90.0f, 48.0f * time.getDelta()); // TODO: Replace 90 degrees to (1 / 90 degrees + object normal as angle)
-		} else {
-			coyoteTimer += time.getDelta();
-			if(coyoteTimer >= info.coyoteTime) this.onGround = false;
-
-			transform.rotation += -360.0f * (velocity.x() >= 0.0f ? 1.0f : -1.0f) * time.getDelta();
-		}
-
-		if(transform.position.y() <= -20.0f) respawn(world); // TODO: Remove, it's only for debugging
+	protected Vector2f getAnchor() {
+		return new Vector2f();
 	}
 
-	private void control(Time time) {
-		velocity.x = 0.0f;
-		//if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_D)) velocity.x += info.speed;
-		//if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_A)) velocity.x -= info.speed;
-
-		velocity.x = info.speed;
-		velocity.y -= info.gravity * time.getDelta();
-
-		if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_SPACE) || Mouse.isButtonPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
-			jumping = true;
-			jumpBufferTimer = 0.0f;
-		} else {
-			jumpBufferTimer += time.getDelta();
-			if(jumpBufferTimer >= info.jumpBufferTime) jumping = false;
-		}
-
-		if(jumping && onGround) {
-			velocity.y = info.jumpHeight;
-			onGround = false;
-		}
+	public void update(Time time, World world, Camera camera) {
+		if(transform.position.y() <= -20.0f) world.restart(this, camera); // TODO: Remove, it's only for debugging
 	}
 
-	private boolean resolveCollisionsAndGetOnGround(Time time, World world) {
-		float tempVelocityY = velocity.y() * time.getDelta();
-		float originTempVelocityY = tempVelocityY;
-
-		for(Block block : world.blocks) {
-			Collider blockResolveCollider = BlockInfo.getById(block.id).resolveCollider();
-			Collider blockKillCollider = BlockInfo.getById(block.id).killCollider();
-
-			if(blockResolveCollider != null) {
-				tempVelocityY = resolveCollider.clipVelocityBottom(
-						transform, block.transform,
-						blockResolveCollider, tempVelocityY
-				);
-			}
-
-			if(blockKillCollider != null && killCollider.intersects(transform, block.transform, blockKillCollider)) respawn(world);
-		}
-
-		transform.position.x += velocity.x() * time.getDelta();
-		transform.position.y += tempVelocityY;
-
-		if(originTempVelocityY != tempVelocityY && originTempVelocityY < 0.0f) {
-			velocity.y = 0.0f;
-			return true;
-		}
-
-		return false;
-	}
-
-	public void respawn(World world) {
-		transform.position.set(world.spawnPoint);
+	public void resetVelocity() {
 		velocity.set(0.0f);
-	}
-
-	public boolean isOnGround() {
-		return onGround;
 	}
 }
