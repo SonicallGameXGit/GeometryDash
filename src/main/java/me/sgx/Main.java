@@ -146,7 +146,7 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		Window.create(1920, 1080, "Geometry Dash", true, false, true);
 		Window.initImGui(true);
 
