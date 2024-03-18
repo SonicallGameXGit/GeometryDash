@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tte">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/resources/libraries/tte.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
