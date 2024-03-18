@@ -2,7 +2,6 @@ package me.sgx.gd.world;
 
 import me.sgx.engine.io.Keyboard;
 import me.sgx.engine.io.Mouse;
-import me.sgx.engine.math.MathUtil;
 import me.sgx.engine.math.Time;
 import me.sgx.gd.graphics.Camera;
 import org.joml.Vector2f;
@@ -12,7 +11,7 @@ public class BallPlayer extends Player {
 	private static final float GRAVITY = 50.0f, ROTATE_SPEED = 45.0f, ROTATE_SHARPNESS = 48.0f, COYOTE_TIME = 0.15f, JUMP_BUFFER_TIME = 0.075f;
 
 	private float coyoteTimer = 0.0f, jumpBufferTimer = 0.0f, rawRotation;
-	private boolean onGround = false, jumping = false, direction = false;
+	private boolean onGround = false, jumping = false, direction = false, rotateDirection = false;
 
 	public BallPlayer() {
 		super(Player.BALL_TEXTURE, new Collider(), new Collider(new Vector2f(0.25f), new Vector2f(0.5f)));
@@ -39,8 +38,7 @@ public class BallPlayer extends Player {
 			if(coyoteTimer >= COYOTE_TIME) this.onGround = false;
 		}
 
-		rawRotation += ROTATE_SPEED * speed * (direction ? -1.0f : 1.0f) * time.getDelta();
-		transform.rotation = MathUtil.lerp(transform.rotation, rawRotation, ROTATE_SHARPNESS * time.getDelta());
+		transform.rotation += ROTATE_SPEED * speed * (rotateDirection ? -1.0f : 1.0f) * (onGround ? 1.0f : 0.75f) * time.getDelta();
 	}
 
 	private void control(Time time) {
@@ -55,11 +53,14 @@ public class BallPlayer extends Player {
 			if(jumpBufferTimer >= JUMP_BUFFER_TIME) jumping = false;
 		}
 
-		if(onGround && jumping) {
-			direction = !direction;
+		if(onGround) {
+			if(jumping) {
+				direction = !direction;
+				jumping = false;
+				onGround = false;
 
-			onGround = false;
-			jumping = false;
+				velocity.y = 0.0f;
+			} else rotateDirection = direction;
 		}
 	}
 

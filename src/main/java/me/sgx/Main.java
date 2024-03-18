@@ -18,7 +18,10 @@ import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import java.io.*;
 import java.util.Random;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 public class Main {
 	private static long seed = new Random().nextLong();
@@ -29,8 +32,8 @@ public class Main {
 				for(int x = 0; x < info[y].length; x++)
 					if(info[y][x] > -1) world.blocks.add(new Block(info[y][x], new Transform(new Vector2f(x, info.length - 1.0f - y).add(position), new Vector2f(1.0f), 0.0f)));
 		}
-	}
 
+	}
 	private static final Structure michigunSpikes = new Structure(new byte[][] {
 			{ 1, 1, 1 }
 	});
@@ -75,8 +78,76 @@ public class Main {
 			passBuffer--;
 		}
 	}
-	public static void main(String[] args) throws InterruptedException {
-		Window.create(1920, 1080, "Geometry Dash", true, false, false);
+
+	private static byte[] floatToByteArray(float value) {
+		int bits = Float.floatToIntBits(value);
+		return new byte[] { (byte) (bits >> 24), (byte) (bits >> 16), (byte) (bits >> 8), (byte) bits };
+	}
+
+	private static float byteArrayToFloat(byte[] bytes) {
+		return Float.intBitsToFloat(bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF));
+	}
+
+	private static byte[] byteArrayFromVector2f(Vector2f value) {
+		byte[] x = floatToByteArray(value.x());
+		byte[] y = floatToByteArray(value.y());
+
+		byte[] result = new byte[x.length + y.length];
+		System.arraycopy(x, 0, result, 0, x.length);
+		System.arraycopy(y, 0, result, x.length, y.length);
+
+		return result;
+	}
+	private static Vector2f byteArrayToVector2f(byte[] bytes) {
+		byte[] x = new byte[4];
+		byte[] y = new byte[4];
+
+		System.arraycopy(bytes, 0, x, 0, x.length);
+		System.arraycopy(bytes, 4, y, 0, y.length);
+
+		return new Vector2f(byteArrayToFloat(x), byteArrayToFloat(y));
+	}
+
+	private static void saveWorld(World world) throws IOException { // TODO: Remove 1[id] by making Flag: 0[id] - all blocks with this id, 1[id] - all blocks with this id
+		File file = new File("res/levels/test.bin");
+		file.getParentFile().mkdirs();
+		file.createNewFile();
+
+		DeflaterOutputStream fileOutputStream = new DeflaterOutputStream(new FileOutputStream(file));
+		for(Block block : world.blocks) {
+			byte[] result = new byte[21]; // 1[id] + 8[position] + 8[scale] + 4[rotation]
+			result[0] = block.id;
+
+			System.arraycopy(byteArrayFromVector2f(block.transform.position), 0, result, 1, 8);
+			System.arraycopy(byteArrayFromVector2f(block.transform.scale), 0, result, 9, 8);
+			System.arraycopy(floatToByteArray(block.transform.rotation), 0, result, 17, 4);
+
+			fileOutputStream.write(result);
+		}
+
+		fileOutputStream.flush();
+		fileOutputStream.close();
+	}
+
+	private static void loadWorld(World world) {
+		try(InflaterInputStream fileInputStream = new InflaterInputStream(new FileInputStream("res/levels/test.bin"))) {
+			byte[] bytes = fileInputStream.readAllBytes();
+			for(int i = 0; i < bytes.length / 21; i++) {
+				byte[] position = new byte[8], scale = new byte[8], rotation = new byte[4];
+
+				System.arraycopy(bytes, i * 21 + 1, position, 0, position.length);
+				System.arraycopy(bytes, i * 21 + 9, scale, 0, scale.length);
+				System.arraycopy(bytes, i * 21 + 17, rotation, 0, rotation.length);
+
+				world.blocks.add(new Block(bytes[i * 21], new Transform(byteArrayToVector2f(position), byteArrayToVector2f(scale), byteArrayToFloat(rotation))));
+			}
+		} catch (IOException exception) {
+			throw new RuntimeException(exception);
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		Window.create(1920, 1080, "Geometry Dash", true, false, true);
 		Window.initImGui(true);
 
 		Keyboard.initialize();
@@ -96,8 +167,11 @@ public class Main {
 		World world = new World();
 		world.spawnPoint = new Vector2f(0.0f, 4.0f);
 
-		int lastOffset = 0;
-		generateWorld(world, lastOffset);
+		//for(int i = 0; i < 128; i++) generateWorld(world, i);
+		//saveWorld(world);
+		loadWorld(world);
+
+		//System.exit(0);
 
 		Camera camera = new Camera(new Vector2f(), new Vector2f(0.25f), 0.0f);
 
@@ -115,10 +189,6 @@ public class Main {
 		while(Window.isRunning()) {
 			Window.update();
 			time.update();
-
-			//Thread.sleep(24);
-
-			if(Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_F)) System.out.println("F");
 
 			fps++;
 			fpsUpdateTime += time.getActualDelta();
@@ -147,7 +217,7 @@ public class Main {
 			ImGui.dragFloat("Time Scale", timeScale, 0.001f, 0.0f, 2.0f);
 			time.scale = timeScale[0];
 
-			int offset = (int) Math.floor((player.transform.position.x() + 11.0f) / 11.0f);
+			/*int offset = (int) Math.floor((player.transform.position.x() + 11.0f) / 11.0f);
 			if(offset != lastOffset) {
 				lastOffset = offset;
 
@@ -158,7 +228,7 @@ public class Main {
 
 				world.clear();
 				for(int i = -1; i <= 1; i++) generateWorld(world, lastOffset + i);
-			}
+			}*/
 
 			if(ImGui.combo("Mode", playerType, types)) {
 				if(playerType.get() == 0) {

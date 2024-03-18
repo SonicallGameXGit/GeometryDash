@@ -17,4 +17,7 @@ public record BlockInfo(Vector4f uv, Collider resolveCollider, Collider killColl
 	public static BlockInfo getById(byte id) {
 		return infos.get(id);
 	}
+	public static int getBlocksCount() {
+		return infos.size();
+	}
 }

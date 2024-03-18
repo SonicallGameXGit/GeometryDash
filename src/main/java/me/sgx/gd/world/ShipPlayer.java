@@ -9,7 +9,7 @@ import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
 public class ShipPlayer extends Player {
-	private static final float GRAVITY = 3.0f, GRAVITY_CLAMP = 5.0f, ANGLE_CLAMP = 40.0f, ROTATION_SHARPNESS = 14.0f;
+	private static final float GRAVITY = 3.0f, GRAVITY_CLAMP = 5.0f, ANGLE_HALF_CLAMP = 30.0f, ROTATION_SHARPNESS = 14.0f;
 
 	public ShipPlayer() {
 		super(Player.SHIP_TEXTURE, new Collider(new Vector2f(0.25f), new Vector2f(0.5f)), new Collider(new Vector2f(0.35f), new Vector2f(0.3f)));
@@ -31,7 +31,7 @@ public class ShipPlayer extends Player {
 		super.update(time, world, camera);
 		control(time);
 
-		transform.rotation = MathUtil.lerp(transform.rotation, resolveCollisionsAndGetOnGround(time, world, camera) ? 0.0f : velocity.y() / GRAVITY_CLAMP * ANGLE_CLAMP, ROTATION_SHARPNESS * time.getDelta());
+		transform.rotation = MathUtil.lerp(transform.rotation, resolveCollisionsAndGetOnGround(time, world, camera) ? 0.0f : velocity.y() / GRAVITY_CLAMP * ANGLE_HALF_CLAMP, ROTATION_SHARPNESS * time.getDelta());
 	}
 
 	private void control(Time time) {
