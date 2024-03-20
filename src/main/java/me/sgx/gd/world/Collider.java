@@ -16,19 +16,25 @@ public class Collider {
 	public Collider() { }
 
 	public boolean intersects(Transform thisTransform, Transform otherTransform, Collider otherCollider) {
-		Vector2f minA = new Vector2f(thisTransform.position).add(new Vector2f(position).mul(thisTransform.scale));
-		Vector2f minB = new Vector2f(otherTransform.position).add(new Vector2f(otherCollider.position).mul(otherTransform.scale));
-		Vector2f maxA = new Vector2f(minA).add(new Vector2f(size).mul(thisTransform.scale));
-		Vector2f maxB = new Vector2f(minB).add(new Vector2f(otherCollider.size).mul(otherTransform.scale));
+		Vector2f thisTransformScale = new Vector2f(thisTransform.scale).absolute();
+		Vector2f otherTransformScale = new Vector2f(otherTransform.scale).absolute();
+
+		Vector2f minA = new Vector2f(thisTransform.position).add(new Vector2f(position).mul(thisTransformScale));
+		Vector2f minB = new Vector2f(otherTransform.position).add(new Vector2f(otherCollider.position).mul(otherTransformScale));
+		Vector2f maxA = new Vector2f(minA).add(new Vector2f(size).mul(thisTransformScale));
+		Vector2f maxB = new Vector2f(minB).add(new Vector2f(otherCollider.size).mul(otherTransformScale));
 
 		if(maxA.x() <= minB.x() || minA.x() >= maxB.x()) return false;
 		return !(maxA.y() <= minB.y()) && !(minA.y() >= maxB.y());
 	}
 	public float clipVelocityY(Transform thisTransform, Transform otherTransform, Collider otherCollider, float velocity, ClipType clipType) {
-		Vector2f minA = new Vector2f(thisTransform.position).add(new Vector2f(position).mul(thisTransform.scale));
-		Vector2f minB = new Vector2f(otherTransform.position).add(new Vector2f(otherCollider.position).mul(otherTransform.scale));
-		Vector2f maxA = new Vector2f(minA).add(new Vector2f(size).mul(thisTransform.scale));
-		Vector2f maxB = new Vector2f(minB).add(new Vector2f(otherCollider.size).mul(otherTransform.scale));
+		Vector2f thisTransformScale = new Vector2f(thisTransform.scale).absolute();
+		Vector2f otherTransformScale = new Vector2f(otherTransform.scale).absolute();
+
+		Vector2f minA = new Vector2f(thisTransform.position).add(new Vector2f(position).mul(thisTransformScale));
+		Vector2f minB = new Vector2f(otherTransform.position).add(new Vector2f(otherCollider.position).mul(otherTransformScale));
+		Vector2f maxA = new Vector2f(minA).add(new Vector2f(size).mul(thisTransformScale));
+		Vector2f maxB = new Vector2f(minB).add(new Vector2f(otherCollider.size).mul(otherTransformScale));
 
 		if(maxA.x() <= minB.x() || minA.x() >= maxB.x()) return velocity;
 		if(clipType == ClipType.DOWN || clipType == ClipType.BOTH) {

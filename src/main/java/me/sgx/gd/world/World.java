@@ -16,7 +16,9 @@ public class World extends Drawable {
 	private static final int textureAtlas = Texture.create("res/textures/world.png", GL11.GL_NEAREST);
 	private static int music = 0;
 
-	public final ArrayList<Block> blocks = new ArrayList<>();
+	public Player player = null;
+
+	public final ArrayList<PlacedBlock> blocks = new ArrayList<>();
 
 	private final SoundSource musicSource = new SoundSource();
 	public Vector2f spawnPoint = new Vector2f();
@@ -33,16 +35,40 @@ public class World extends Drawable {
 		musicSource.play(false);
 	}
 
-	public void restart(Player player, Camera camera) {
+	public void restart(Camera camera) {
+		player = new CubePlayer(player);
+		player.transform.rotation = 0.0f;
+
 		player.resetVelocity();
 
 		player.transform.position.set(spawnPoint);
+		player.physicsSpeed = 1.0f;
+		
 		camera.position.set(spawnPoint);
 
-		musicSource.play(false);
+		playMusic();
 	}
 	public void update(Time time) {
 		musicSource.setPitch(time.scale);
+	}
+
+	public void setMusicVolume(float volume) {
+		musicSource.setVolume(volume);
+	}
+	public void setMusicPitch(float pitch) {
+		musicSource.setPitch(pitch);
+	}
+	public void stopMusic() {
+		musicSource.stop();
+	}
+	public void pauseMusic() {
+		musicSource.pause();
+	}
+	public void unpauseMusic() {
+		musicSource.unpause();
+	}
+	public void playMusic() {
+		musicSource.play(false);
 	}
 
 	@Override
@@ -50,8 +76,8 @@ public class World extends Drawable {
 		Vector4f bounds = getBounds();
 
 		loadTexture(textureAtlas);
-		for(Block block : blocks)
+		for(PlacedBlock block : blocks)
 			if(new Collider(new Vector2f(-0.5f), new Vector2f(1.0f)).intersects(block.transform, new Transform(), new Collider(new Vector2f(bounds.x(), bounds.y()), new Vector2f(bounds.z() - bounds.x(), bounds.w() - bounds.y()))))
-				render(block.transform, BlockInfo.getById(block.id).uv());
+				render(block.transform, Block.getById(block.id).uv);
 	}
 }
