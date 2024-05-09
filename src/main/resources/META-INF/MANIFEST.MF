@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: me.sgx.Main
+Main-Class: me.sgx.GeometryDash
 

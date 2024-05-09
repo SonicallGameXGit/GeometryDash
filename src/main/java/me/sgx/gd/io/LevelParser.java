@@ -1,5 +1,6 @@
 package me.sgx.gd.io;
 
+import lombok.extern.log4j.Log4j2;
 import me.sgx.gd.world.World;
 import me.sgx.gd.world.block.Block;
 import me.sgx.gd.world.block.Blocks;
@@ -14,8 +15,10 @@ import java.io.IOException;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+@Log4j2
 public class LevelParser {
 	public static void load(String location) {
+        log.info("Parsing level {}", location);
 		byte[] bytes;
 		try {
 			InflaterInputStream fileInputStream = new InflaterInputStream(new FileInputStream(location));
@@ -39,7 +42,8 @@ public class LevelParser {
 				)));
 			}
 		} catch(IOException exception) {
-			throw new RuntimeException(exception);
+			log.fatal("An error occurred while reading level file", exception);
+			System.exit(2);
 		}
 
 		String[] files = location.replace('\\', '/').split("/");
@@ -48,6 +52,7 @@ public class LevelParser {
 		World.time.update();
 	}
 	public static void save(String location) {
+		log.info("Saving level to: {}", location);
 		File file = new File(location);
 
 		//noinspection ResultOfMethodCallIgnored

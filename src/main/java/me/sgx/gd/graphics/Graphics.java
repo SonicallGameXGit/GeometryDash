@@ -1,5 +1,6 @@
 package me.sgx.gd.graphics;
 
+import lombok.extern.log4j.Log4j2;
 import me.sgx.engine.graphics.Window;
 import me.sgx.engine.graphics.shader.Shader;
 import me.sgx.engine.graphics.shader.ShaderProgram;
@@ -16,6 +17,7 @@ import org.lwjgl.opengl.GL20;
 
 import java.util.HashMap;
 
+@Log4j2
 public class Graphics {
 	private static final Mesh mesh = new Mesh(new MeshBuffer(new float[] {
 			-0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f
@@ -28,6 +30,7 @@ public class Graphics {
 	private static String texture = "none";
 
 	public static void initialize() {
+		log.info("Initializing Graphics");
 		shaderProgram.addShader(new Shader("res/shaders/world.vert", GL20.GL_VERTEX_SHADER));
 		shaderProgram.addShader(new Shader("res/shaders/world.frag", GL20.GL_FRAGMENT_SHADER));
 		shaderProgram.compile();
@@ -42,7 +45,9 @@ public class Graphics {
 	public static void loadTexture(String name, String path) {
 		loadTextureRaw(name, "res/textures/" + path);
 	}
+
 	public static void loadTextureRaw(String name, String path) {
+        log.info("Loading texture: {}", name);
 		if(!textures.containsKey(name)) textures.put(name, Texture.create(path, GL11.GL_LINEAR));
 	}
 

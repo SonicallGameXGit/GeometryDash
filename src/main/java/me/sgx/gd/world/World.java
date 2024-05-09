@@ -1,5 +1,6 @@
 package me.sgx.gd.world;
 
+import lombok.extern.log4j.Log4j2;
 import me.sgx.engine.audio.Audio;
 import me.sgx.engine.audio.AudioSystem;
 import me.sgx.engine.audio.SoundSource;
@@ -19,6 +20,7 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 
+@Log4j2
 public class World {
 	public static final ArrayList<PlacedBlock> blocks = new ArrayList<>();
 	public static final Time time = new Time();
@@ -38,6 +40,7 @@ public class World {
 	public static Vector3f groundColor = new Vector3f(0.15f, 0.1f, 1.0f), backgroundColor = new Vector3f(groundColor);
 
 	public static void initialize() {
+		log.info("Initializing world");
 		explodeSoundSource.setAudio(AudioSystem.loadAudio("res/sounds/explode.ogg"));
 
 		ground.texture = "ground";
@@ -47,6 +50,7 @@ public class World {
 	}
 	public static void loadSong(String id) {
 		if(audio != null) AudioSystem.clear(audio);
+        log.info("Loading audio {}.ogg", id);
 
 		audio = AudioSystem.loadAudio("res/music/" + id + ".ogg");
 		musicSource.setAudio(audio);

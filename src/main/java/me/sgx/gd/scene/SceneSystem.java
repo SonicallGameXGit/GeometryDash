@@ -1,6 +1,8 @@
 package me.sgx.gd.scene;
 
 import imgui.ImGui;
+import lombok.extern.log4j.Log4j2;
+import me.sgx.GeometryDash;
 import me.sgx.engine.audio.AudioSystem;
 import me.sgx.engine.graphics.Window;
 import me.sgx.engine.io.Keyboard;
@@ -18,8 +20,9 @@ import java.util.HashMap;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 
+@Log4j2
 public class SceneSystem {
-	public static final String TITLE = "Geometry Dash 0.1";
+	public static final String TITLE = String.format("%s %s", GeometryDash.NAME, GeometryDash.VERSION.getAsString());
 	public static final HashMap<String, Object> globalData = new HashMap<>();
 
 	public static boolean running = true;
@@ -31,14 +34,17 @@ public class SceneSystem {
 			scene.initialize();
 		}
 
+        log.info("New scene: {}", scene.getClass().getSimpleName());
 		SceneSystem.scene = scene;
 	}
 
 	public static void run(boolean enableImGui) {
+		log.info("Creating window");
 		Window.create(1, 1, TITLE, true, false, false);
 		Window.setIcon("res/icon.png");
 
 		if(enableImGui) {
+			log.info("Initializing ImGui");
 			Window.initImGui(true);
 			ImGui.getIO().setFontGlobalScale(2.0f);
 		}

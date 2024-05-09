@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="gd:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/gd_jar</output-path>
-    <root id="archive" name="gd.jar">
-      <element id="module-output" name="gd" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/src/main/resources/libraries/tte.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>
