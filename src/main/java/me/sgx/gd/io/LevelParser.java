@@ -42,8 +42,7 @@ public class LevelParser {
 				)));
 			}
 		} catch(IOException exception) {
-			log.fatal("An error occurred while reading level file", exception);
-			System.exit(2);
+			throw new RuntimeException("An error occurred while reading level file", exception);
 		}
 
 		String[] files = location.replace('\\', '/').split("/");

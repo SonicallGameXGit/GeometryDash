@@ -1,6 +1,7 @@
 package me.sgx.gd.scene;
 
 import imgui.ImGui;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import me.sgx.GeometryDash;
 import me.sgx.engine.audio.AudioSystem;
@@ -26,7 +27,7 @@ public class SceneSystem {
 	public static final HashMap<String, Object> globalData = new HashMap<>();
 
 	public static boolean running = true;
-	private static Scene scene = null;
+	@Getter private static Scene scene = null;
 
 	public static void setScene(Scene scene) {
 		if(SceneSystem.scene != null) {
