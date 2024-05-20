@@ -39,7 +39,7 @@ public class LevelMenuScene extends Scene {
 	private final Sprite edgeSprite = new Sprite(new Transform(new Vector2f(), new Vector2f(0.5f)));
 
 	private final MenuLevel[] levels = {
-			new MenuLevel("TheFatRatOblivion", new Vector3f(0.2f, 0.1f, 1.0f)),
+			new MenuLevel("Active", new Vector3f(0.2f, 0.1f, 1.0f)),
 	};
 	private int currentLevel = 0, lastLevel = 0, difference = 0;
 
