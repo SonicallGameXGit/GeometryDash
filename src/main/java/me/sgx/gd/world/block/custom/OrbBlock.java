@@ -27,8 +27,8 @@ public class OrbBlock extends Block implements Interactable {
 	}
 
 	@Override
-	public void initialize(PlacedBlock placed) {
-		super.initialize(placed);
+	public void place(PlacedBlock placed) {
+		super.place(placed);
 		MultipleUseModule.initialize(placed); // MULTIPLE_USE_MODULE_CD_ID
 	}
 

@@ -13,20 +13,20 @@ public class Button extends Sprite {
 	private boolean hovered = false, pressed = false, justPressed = false, released = false, canJustPress = false, canRelease = false;
 	public boolean disabled = false;
 
-	public Button(String texture, Transform transform) {
+	public Button(int texture, Transform transform) {
 		super(transform);
 		this.texture = texture;
 	}
-	public Button(String texture, Transform transform, Vector4f uv) {
+	public Button(int texture, Transform transform, Vector4f uv) {
 		super(transform);
 		this.texture = texture;
 		this.uv = uv;
 	}
-	public Button(String texture, Transform holder, Transform transform) {
+	public Button(int texture, Transform holder, Transform transform) {
 		super(holder, transform);
 		this.texture = texture;
 	}
-	public Button(String texture, Transform holder, Transform transform, Vector4f uv) {
+	public Button(int texture, Transform holder, Transform transform, Vector4f uv) {
 		super(holder, transform);
 
 		this.texture = texture;

@@ -8,7 +8,7 @@ import static me.sgx.gd.world.World.time;
 
 public class Camera {
 	private static final float FOLLOW_BORDER_HEIGHT = 0.8f, FOLLOW_SPEED_Y = 14.0f;
-	private static final Vector2f FOLLOW_OFFSET = new Vector2f(1.0f, 0.0f);
+	private static final Vector2f FOLLOW_OFFSET = new Vector2f(2.0f, 0.0f);
 
 	public static Camera main = new Camera();
 
@@ -31,4 +31,17 @@ public class Camera {
 				rawY + FOLLOW_OFFSET.y(),
 				FOLLOW_SPEED_Y * time.getDelta());
 	}
+
+	public float getTopBound() {
+		return position.y + 1.0f / zoom.y;
+	}
+	public float getBottomBound() {
+        return position.y - 1.0f / zoom.y;
+    }
+	public float getRightBound(float aspect) {
+		return position.x + aspect / zoom.x;
+	}
+	public float getLeftBound(float aspect) {
+        return position.x - aspect / zoom.x;
+    }
 }

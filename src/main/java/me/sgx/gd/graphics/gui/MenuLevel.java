@@ -1,6 +1,7 @@
 package me.sgx.gd.graphics.gui;
 
 import me.sgx.engine.graphics.Window;
+import me.sgx.gd.graphics.Textures;
 import me.sgx.gd.graphics.Camera;
 import me.sgx.gd.scene.SceneSystem;
 import me.sgx.gd.scene.custom.LevelScene;
@@ -16,7 +17,7 @@ public class MenuLevel {
 	public boolean disabled = false;
 
 	private final float backgroundSize = 0.6f;
-	private final BouncingButton background = new BouncingButton("gui/level_menu", new Transform(
+	private final BouncingButton background = new BouncingButton(Textures.GUI_LEVELMENU, new Transform(
 			new Vector2f(),
             new Vector2f(backgroundSize / 0.28f, backgroundSize)
 	), new Vector4f(0.0f, 0.0f, 0.895f, 0.25f));
@@ -24,9 +25,7 @@ public class MenuLevel {
 	public MenuLevel(String name, Vector3f color) {
 		this.name = name;
 		this.color.set(color);
-
-		background.texture = "gui/level_menu";
-    }
+	}
 
 	public void update() {
 		background.disabled = disabled;

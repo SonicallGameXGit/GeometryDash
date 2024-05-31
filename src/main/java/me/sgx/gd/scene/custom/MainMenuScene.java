@@ -7,6 +7,7 @@ import me.sgx.gd.audio.Sounds;
 import me.sgx.gd.graphics.Camera;
 import me.sgx.gd.graphics.Graphics;
 import me.sgx.gd.graphics.Sprite;
+import me.sgx.gd.graphics.Textures;
 import me.sgx.gd.graphics.animation.Animation;
 import me.sgx.gd.graphics.animation.InterpolationMode;
 import me.sgx.gd.graphics.animation.Keyframe;
@@ -20,10 +21,11 @@ import me.sgx.gd.world.math.Transform;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.lwjgl.glfw.GLFW;
 
 public class MainMenuScene extends Scene {
 	private final BouncingButton playButton = new BouncingButton(
-			"gui/main_menu",
+			Textures.GUI_MAINMENU,
 			new Transform(new Vector2f(), new Vector2f(0.6f)),
 			new Vector4f(
 					0.0f, 0.0f,
@@ -31,7 +33,7 @@ public class MainMenuScene extends Scene {
 			)
 	);
 	private final BouncingButton editorButton = new BouncingButton(
-			"gui/main_menu",
+			Textures.GUI_MAINMENU,
 			new Transform(new Vector2f(playButton.transform.size.x() + 0.1f, 0.0f), new Vector2f(0.425f)),
 			new Vector4f(
 					0.25f, 0.0f,
@@ -54,7 +56,7 @@ public class MainMenuScene extends Scene {
 	private float backgroundColorChangeTimer = 0.0f, backgroundColorChangeTime = getBackgroundColorChangeTime();
 
 	private final Vector2f exitButtonSize = new Vector2f(0.225f * 1.0323f, 0.225f);
-	private final BouncingButton exitButton = new BouncingButton("gui/main_menu", new Transform(
+	private final BouncingButton exitButton = new BouncingButton(Textures.GUI_MAINMENU, new Transform(
 			new Vector2f(),
 			exitButtonSize
 	));
@@ -70,23 +72,25 @@ public class MainMenuScene extends Scene {
 		super.initialize();
 		Camera.main = new Camera();
 
+		GLFW.glfwSetInputMode(Window.getHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+
 		SoundSource menuLoopSource = new SoundSource();
 		menuLoopSource.setAudio(Sounds.getAudio("menu_loop"));
 		menuLoopSource.play(true);
 
 		SceneSystem.globalData.put(MainMenuScene.class + "/menu_loop", menuLoopSource);
 
-		titleSprite.texture = "gui/main_menu";
+		titleSprite.texture = Textures.GUI_MAINMENU;
 		titleSprite.uv = new Vector4f(0.0f, 1.0f - 0.125f, 0.99f, 0.125f);
 
-		backgroundSprite.texture = "background";
+		backgroundSprite.texture = Textures.WORLD_BACKGROUND;
 		backgroundSprite.color.set(new Vector4f(backgroundStaticColor, 1.0f));
 
-		groundSprite.texture = "ground";
+		groundSprite.texture = Textures.WORLD_GROUND;
 		groundSprite.color.set(new Vector4f(backgroundStaticColor.x() - 0.2f, backgroundStaticColor.y() - 0.2f, backgroundStaticColor.z() - 0.2f, 1.0f));
 		groundSprite.transform.position.y = -1.0f + groundSprite.transform.size.y() / 2.0f - 0.325f;
 
-		groundHighlightSprite.texture = "ground_highlight";
+		groundHighlightSprite.texture = Textures.WORLD_GROUNDHIGHLIGHT;
 		groundHighlightSprite.transform.size.set(3.0f, 0.01f);
 
 		exitButton.uv.set(0.5f, 0.0f, 0.129f, 0.125f);

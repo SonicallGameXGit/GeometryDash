@@ -26,7 +26,7 @@ public class PlacedBlock {
 		this.transform.size.mul(block.customScale);
 
 		initializeSprite();
-		block.initialize(this);
+		block.place(this);
 	}
 	public PlacedBlock(Block block, Transform transform, Vector4f color) {
 		this.block = block;
@@ -36,12 +36,12 @@ public class PlacedBlock {
 		this.color = new Vector4f(color);
 
 		initializeSprite();
-		block.initialize(this);
+		block.place(this);
 	}
 
 	private void initializeSprite() {
-		sprite.uv = block.uv;
-		sprite.texture = World.TEXTURE_ATLAS;
+		sprite.uv = block.texture;
+		sprite.texture = World.getTextureAtlas();
 		sprite.holder = this.transform;
     }
 }

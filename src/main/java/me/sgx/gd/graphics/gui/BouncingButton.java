@@ -18,22 +18,22 @@ public class BouncingButton extends Button {
 
 	private final Vector2f originalSize;
 
-	public BouncingButton(String texture, Transform transform) {
+	public BouncingButton(int texture, Transform transform) {
 		super(texture, transform);
 		originalSize = new Vector2f(transform.size);
 	}
 
-	public BouncingButton(String texture, Transform transform, Vector4f uv) {
+	public BouncingButton(int texture, Transform transform, Vector4f uv) {
 		super(texture, transform, uv);
 		originalSize = new Vector2f(transform.size);
 	}
 
-	public BouncingButton(String texture, Transform holder, Transform transform) {
+	public BouncingButton(int texture, Transform holder, Transform transform) {
 		super(texture, holder, transform);
 		originalSize = new Vector2f(transform.size);
 	}
 
-	public BouncingButton(String texture, Transform holder, Transform transform, Vector4f uv) {
+	public BouncingButton(int texture, Transform holder, Transform transform, Vector4f uv) {
 		super(texture, holder, transform, uv);
 		originalSize = new Vector2f(transform.size);
 	}

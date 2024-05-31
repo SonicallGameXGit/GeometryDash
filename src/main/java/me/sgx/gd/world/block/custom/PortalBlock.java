@@ -15,8 +15,8 @@ public abstract class PortalBlock extends Block implements Interactable {
 	}
 
 	@Override
-	public void initialize(PlacedBlock placed) {
-		super.initialize(placed);
+	public void place(PlacedBlock placed) {
+		super.place(placed);
 		placed.cd.add(false);
 	}
 

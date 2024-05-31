@@ -8,7 +8,7 @@ public class Sprite {
 	public Transform holder = new Transform();
 	public Transform transform;
 
-	public String texture = "none";
+	public int texture = 0;
 	public Vector4f uv = new Vector4f(0.0f, 0.0f, 1.0f, 1.0f), color = new Vector4f(1.0f);
 
 	public Sprite(Transform holder, Transform transform) { // TODO: Implement Z-Index support using sorting

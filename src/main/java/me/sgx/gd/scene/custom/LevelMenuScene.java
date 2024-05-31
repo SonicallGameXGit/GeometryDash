@@ -8,6 +8,7 @@ import me.sgx.engine.math.Time;
 import me.sgx.gd.graphics.Camera;
 import me.sgx.gd.graphics.Graphics;
 import me.sgx.gd.graphics.Sprite;
+import me.sgx.gd.graphics.Textures;
 import me.sgx.gd.graphics.animation.Animation;
 import me.sgx.gd.graphics.animation.InterpolationMode;
 import me.sgx.gd.graphics.animation.Keyframe;
@@ -91,17 +92,19 @@ public class LevelMenuScene extends Scene {
 		super.initialize();
 		Camera.main = new Camera();
 
+		GLFW.glfwSetInputMode(Window.getHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+
 		Object menuLoop = SceneSystem.globalData.get(LevelMenuScene.class + "/menu_loop");
 		if(menuLoop instanceof SoundSource menuLoopSource) menuLoopSource.unpause();
 
-		edgeSprite.texture = "gui/level_menu";
+		edgeSprite.texture = Textures.GUI_LEVELMENU;
 		edgeSprite.uv = new Vector4f(0.0f, 0.25f, 0.25f, 0.25f);
 
-		groundSprite.texture = "ground";
+		groundSprite.texture = Textures.WORLD_GROUND;
 		groundSprite.color.set(new Vector4f(backgroundColor, 1.0f));
 		groundSprite.transform.position.y = -1.0f + groundSprite.transform.size.y() / 2.0f - 0.5f;
 
-		groundHighlightSprite.texture = "ground_highlight";
+		groundHighlightSprite.texture = Textures.WORLD_GROUNDHIGHLIGHT;
 		groundHighlightSprite.transform.size.set(3.0f, 0.01f);
 
 		sceneChangeAnimation.play();

@@ -1,6 +1,7 @@
 package me.sgx.gd.player;
 
 import me.sgx.engine.math.MathUtil;
+import me.sgx.gd.graphics.Textures;
 import me.sgx.gd.world.World;
 import me.sgx.gd.world.math.Collider;
 import me.sgx.gd.world.math.Transform;
@@ -10,7 +11,7 @@ public abstract class PlayerMode {
 	public static float DEFAULT_JUMP_HEIGHT = 19.91f;
 
 	public static final PlayerMode CUBE = new PlayerMode(
-			"cube",
+			Textures.PLAYERMODE_CUBE,
 			new Collider(), new Collider(), new Collider(),
 			false
 	) {
@@ -45,7 +46,7 @@ public abstract class PlayerMode {
 		}
 	};
 	public static final PlayerMode SHIP = new PlayerMode(
-			"ship",
+			Textures.PLAYERMODE_SHIP,
 			new Collider(new Vector2f(0.6f, 1.0f)),
 			new Collider(new Vector2f(0.6f, 1.0f)),
 			new Collider(new Vector2f(0.6f, 1.0f)),
@@ -88,7 +89,7 @@ public abstract class PlayerMode {
 		}
 	};
 	public static final PlayerMode BALL = new PlayerMode(
-			"ball",
+			Textures.PLAYERMODE_BALL,
 			new Collider(), new Collider(), new Collider(),
 			true
 	) {
@@ -101,6 +102,8 @@ public abstract class PlayerMode {
 			player.cd.add(true); // Rotate Direction
 			player.cd.add(false); // Can Flip Direction
 			player.cd.add(false); // Can Flip Gravity
+
+			player.sprite.transform.size.set(1.05f);
 		}
 
 		@Override
@@ -137,13 +140,13 @@ public abstract class PlayerMode {
 		}
 	};
 
-	public final String texture;
+	public final int texture;
 
 	public final Collider resolveCollider, damageCollider, triggerCollider;
 	public final boolean clipBoth;
 
 	public PlayerMode(
-			String texture,
+			int texture,
 			Collider resolveCollider,
 			Collider damageCollider,
 			Collider triggerCollider,

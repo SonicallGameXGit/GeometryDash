@@ -34,9 +34,11 @@ public class SceneSystem {
 		SceneSystem.scene = scene;
 	}
 
-	public static void run(boolean enableImGui) {
+	public static void run(Class<? extends Scene> defaultScene, boolean enableImGui) {
 		Window.create(1, 1, TITLE, true, false, false);
 		Window.setIcon("res/icon.png");
+
+		GLFW.glfwSetWindowAspectRatio(Window.getHandle(), 16, 9);
 
 		if(enableImGui) {
 			Window.initImGui(true);
@@ -56,10 +58,17 @@ public class SceneSystem {
 
 		AudioSystem.initialize();
 
-		Graphics.initialize();
 		Textures.initialize();
+		Graphics.initialize();
 		Sounds.initialize();
 		World.initialize();
+
+		try {
+			//noinspection deprecation
+			setScene(defaultScene.newInstance());
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 
 		scene.initialize();
 
@@ -68,7 +77,7 @@ public class SceneSystem {
 
 		Time time = new Time();
 		while(Window.isRunning() && running) {
-			Window.update();
+			Window.pollEvents();
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			time.update();
@@ -95,6 +104,7 @@ public class SceneSystem {
 			Graphics.postEnd();
 
 			if(Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_F11)) Window.setFullscreen(!Window.isFullscreen());
+			Window.swapBuffers();
 		}
 
 		scene.close();

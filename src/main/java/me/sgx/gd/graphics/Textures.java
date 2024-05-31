@@ -1,36 +1,22 @@
 package me.sgx.gd.graphics;
 
-import java.io.File;
+import me.sgx.engine.graphics.texture.Texture;
+import org.lwjgl.opengl.GL11;
 
 public class Textures {
-	private static final String DIRECTORY = "res/textures";
+	public static final int GUI_LEVELMENU = load("gui/level_menu");
+	public static final int GUI_MAINMENU = load("gui/main_menu");
 
-	private static void loadTexture(File path, String folder) {
-		if(path.isDirectory()) {
-			File[] files = path.listFiles();
+	public static final int PLAYERMODE_CUBE = load("player/cube");
+	public static final int PLAYERMODE_BALL = load("player/ball");
+	public static final int PLAYERMODE_SHIP = load("player/ship");
 
-			if(files != null) {
-				for(File file : files) {
-					loadTexture(file, folder + '/' + path.getName());
-				}
-			}
+	public static final int WORLD_GROUND = load("world/ground");
+	public static final int WORLD_GROUNDHIGHLIGHT = load("world/ground_highlight");
+	public static final int WORLD_BACKGROUND = load("world/background");
 
-			return;
-		}
-
-		Graphics.loadTextureRaw((folder + '/' + path.getName().split("\\.")[0]).substring(1), path.toString());
+	private static int load(String path) {
+		return Texture.loadFromFile("res/textures/" + path + ".png", GL11.GL_LINEAR);
 	}
-
-	public static void initialize() {
-		File directory = new File(DIRECTORY);
-		if(!directory.exists() || !directory.isDirectory()) {
-			System.err.println("Could not find textures directory: \"" + DIRECTORY + "\".");
-			System.exit(1);
-		}
-
-		File[] files = directory.listFiles();
-		if(files == null) return;
-
-		for(File file : files) loadTexture(file, "");
-	}
+	public static void initialize() {}
 }

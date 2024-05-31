@@ -8,7 +8,9 @@ import me.sgx.engine.math.Time;
 import me.sgx.gd.graphics.Camera;
 import me.sgx.gd.graphics.Graphics;
 import me.sgx.gd.graphics.Sprite;
+import me.sgx.gd.graphics.Textures;
 import me.sgx.gd.player.Player;
+import me.sgx.gd.world.block.Block;
 import me.sgx.gd.world.block.PlacedBlock;
 import me.sgx.gd.world.block.custom.OrbBlock;
 import me.sgx.gd.world.math.Collider;
@@ -27,7 +29,7 @@ public class World {
 
 	private static Audio audio = null;
 
-	public static final String TEXTURE_ATLAS = "world";
+	private static int textureAtlas;
 	private static final SoundSource musicSource = new SoundSource(), explodeSoundSource = new SoundSource();
 
 	public static final Sprite ground = new Sprite(new Transform(new Vector2f(), new Vector2f(1.0f, 4.0f)));
@@ -38,12 +40,13 @@ public class World {
 	public static Vector3f groundColor = new Vector3f(0.15f, 0.1f, 1.0f), backgroundColor = new Vector3f(groundColor);
 
 	public static void initialize() {
+		textureAtlas = Block.buildTextureAtlas();
 		explodeSoundSource.setAudio(AudioSystem.loadAudio("res/sounds/explode.ogg"));
 
-		ground.texture = "ground";
-		groundHighlight.texture = "ground_highlight";
+		ground.texture = Textures.WORLD_GROUND;
+		groundHighlight.texture = Textures.WORLD_GROUNDHIGHLIGHT;
 
-		background.texture = "background";
+		background.texture = Textures.WORLD_BACKGROUND;
 	}
 	public static void loadSong(String id) {
 		if(audio != null) AudioSystem.clear(audio);
@@ -109,7 +112,7 @@ public class World {
 
 		background.render();
 
-		Graphics.setTexture("world");
+		Graphics.setTexture(World.textureAtlas);
 
 		Vector2f size = new Vector2f((float) Window.getWidth() / Window.getHeight() * 2.0f, 2.0f).div(Camera.main.zoom);
 		for(PlacedBlock placedBlock : blocks) {
@@ -136,11 +139,15 @@ public class World {
 
 		for(PlacedBlock placedBlock : blocks) {
 			placedBlock.cd.clear();
-			placedBlock.block.initialize(placedBlock);
+			placedBlock.block.place(placedBlock);
 		}
 	}
 
 	public static float getMusicVolume() {
 		return Math.abs(musicSource.getSample(musicSource.getCurrentSampleOffset()));
+	}
+
+	public static int getTextureAtlas() {
+		return World.textureAtlas;
 	}
 }

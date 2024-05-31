@@ -15,18 +15,18 @@ import java.util.ArrayList;
 public class Blocks {
 	private static final ArrayList<Block> blocks = new ArrayList<>();
 
-	public static final Block DEFAULT = new Block(
+	public static final Block BLOCK_BASIC = new Block(
 			new Collider(), new Collider(new Vector2f(0.5f, 1.0f)), null,
-			new Vector4f(0.0f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("block/basic")
 	);
-	public static final Block DEFAULT_SPIKE = new Block(
+	public static final Block SPIKE_BASIC = new Block(
 			null, new Collider(new Vector2f(0.1f)), null,
-			new Vector4f(0.125f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("spike/basic")
 	);
 
-	public static final OrbBlock YELLOW_ORB = new OrbBlock(
+	public static final OrbBlock ORB_JUMPNORMAL = new OrbBlock(
 			new Collider(new Vector2f(1.2f)),
-			new Vector4f(0.25f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("orb/jump_normal")
 	) {
 		@Override
 		public void onClick(PlacedBlock placed, Player player) {
@@ -38,9 +38,9 @@ public class Blocks {
 			}
 		}
 	};
-	public static final OrbBlock PINK_ORB = new OrbBlock(
+	public static final OrbBlock ORB_JUMPLOW = new OrbBlock(
 			new Collider(new Vector2f(1.2f)),
-			new Vector4f(0.375f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("orb/jump_low")
 	) {
 		@Override
 		public void onClick(PlacedBlock placed, Player player) {
@@ -52,9 +52,9 @@ public class Blocks {
 			}
 		}
 	};
-	public static final OrbBlock BLUE_ORB = new OrbBlock(
+	public static final OrbBlock ORB_FLIPNORMAL = new OrbBlock(
 			new Collider(new Vector2f(1.2f)),
-			new Vector4f(0.5f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("orb/flip_normal")
 	) {
 		@Override
 		public void onClick(PlacedBlock placed, Player player) {
@@ -68,9 +68,9 @@ public class Blocks {
 			}
 		}
 	};
-	public static final OrbBlock GREEN_ORB = new OrbBlock(
+	public static final OrbBlock ORB_JUMPFLIPNORMAL = new OrbBlock(
 			new Collider(new Vector2f(1.2f)),
-			new Vector4f(0.625f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("orb/jumpflip_normal")
 	) {
 		@Override
 		public void onClick(PlacedBlock placed, Player player) {
@@ -84,9 +84,9 @@ public class Blocks {
 			}
 		}
 	};
-	public static final OrbBlock RED_ORB = new OrbBlock(
+	public static final OrbBlock ORB_JUMPHIGH = new OrbBlock(
 			new Collider(new Vector2f(1.2f)),
-			new Vector4f(0.75f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("orb/jump_high")
 	) {
 		@Override
 		public void onClick(PlacedBlock placed, Player player) {
@@ -98,9 +98,9 @@ public class Blocks {
 			}
 		}
 	};
-	public static final OrbBlock BLACK_ORB = new OrbBlock(
+	public static final OrbBlock ORB_FALLNORMAL = new OrbBlock(
 			new Collider(new Vector2f(1.2f)),
-			new Vector4f(0.875f, 0.0f, 0.125f, 0.125f)
+			Block.getTexture("orb/fall_normal")
 	) {
 		@Override
 		public void onClick(PlacedBlock placed, Player player) {
@@ -113,17 +113,18 @@ public class Blocks {
 		}
 	};
 
+	// TODO: Draw textures for portals
 	public static final ModePortalBlock CUBE_PORTAL = new ModePortalBlock(
 			PlayerMode.CUBE, new Collider(),
-			new Vector4f(0.0f, 0.125f, 0.125f, 0.25f)
+			new Vector4f()
 	);
 	public static final ModePortalBlock SHIP_PORTAL = new ModePortalBlock(
 			PlayerMode.SHIP, new Collider(),
-			new Vector4f(0.125f, 0.125f, 0.125f, 0.25f)
+			new Vector4f()
 	);
 	public static final ModePortalBlock BALL_PORTAL = new ModePortalBlock(
 			PlayerMode.BALL, new Collider(),
-			new Vector4f(0.25f, 0.125f, 0.125f, 0.25f)
+			new Vector4f()
 	);
 
 	public static final PortalBlock YELLOW_GRAVITY_PORTAL = new PortalBlock(
@@ -143,29 +144,29 @@ public class Blocks {
 		}
 	};
 
-	public static final Block DEFAULT_DECORATION_POINT = new Block(
+	public static final Block BLOCK_GRIDTLPOINT = new Block(
 			null, null, null,
-			new Vector4f(0.75f, 0.125f, 0.125f, 0.125f)
+			Block.getTexture("block/grid_tlpoint")
 	);
-	public static final Block DEFAULT_DECORATION_MIDDLE = new Block(
+	public static final Block BLOCK_GRIDNONE = new Block(
 			null, null, null,
-			new Vector4f(0.875f, 0.125f, 0.125f, 0.125f)
+			Block.getTexture("block/grid_none")
 	);
-	public static final Block DEFAULT_DECORATION_TOP = new Block(
+	public static final Block BLOCK_GRIDTOP = new Block(
 			null, null, null,
-			new Vector4f(0.625f, 0.25f, 0.125f, 0.125f)
+			Block.getTexture("block/grid_top")
 	);
-	public static final Block DEFAULT_DECORATION_EDGE = new Block(
+	public static final Block BLOCK_GRIDTL = new Block(
 			null, null, null,
-			new Vector4f(0.75f, 0.25f, 0.125f, 0.125f)
+			Block.getTexture("block/grid_tl")
 	);
-	public static final Block DEFAULT_DECORATION_EDGES = new Block(
+	public static final Block BLOCK_GRIDTLR = new Block(
 			null, null, null,
-			new Vector4f(0.875f, 0.25f, 0.125f, 0.125f)
+			Block.getTexture("block/grid_tlr")
 	);
-	public static final Block DEFAULT_DECORATION_BLOCKED = new Block(
+	public static final Block BLOCK_GRIDALL = new Block(
 			null, null, null,
-			new Vector4f(0.0f, 0.375f, 0.125f, 0.125f)
+			Block.getTexture("block/grid_all")
 	);
 
 	public static void register(Block block) {

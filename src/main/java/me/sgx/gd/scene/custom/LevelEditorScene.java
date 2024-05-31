@@ -47,7 +47,7 @@ public class LevelEditorScene extends Scene {
 		public final Sprite selectionPreview = new Sprite(new Transform());
 
 		public void initialize() {
-			selectionPreview.texture = "world";
+			selectionPreview.texture = World.getTextureAtlas();
 		}
 		public void update(Vector4f viewRange) {
 			selectionPreview.transform.position.x = Camera.main.position.x() + viewRange.x() + selectionPreview.transform.size.x() / 2.0f + 0.1f / Camera.main.zoom.x();
@@ -206,7 +206,7 @@ public class LevelEditorScene extends Scene {
 		}
 
 		Block block = Blocks.getById(selection);
-		if(block != null) resources.selectionPreview.uv = block.uv;
+		if(block != null) resources.selectionPreview.uv = block.texture;
 	}
 	private void moveCamera() {
 		if(Mouse.isButtonJustPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT)) mouseClickPos.set(screenToWorld(Mouse.getPosition()));
