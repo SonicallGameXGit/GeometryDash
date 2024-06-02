@@ -3,6 +3,7 @@ package me.sgx.gd.player;
 import me.sgx.engine.math.MathUtil;
 import me.sgx.gd.graphics.Textures;
 import me.sgx.gd.world.World;
+import me.sgx.gd.world.block.PlacedBlock;
 import me.sgx.gd.world.math.Collider;
 import me.sgx.gd.world.math.Transform;
 import org.joml.Vector2f;
@@ -12,7 +13,7 @@ public abstract class PlayerMode {
 
 	public static final PlayerMode CUBE = new PlayerMode(
 			Textures.PLAYERMODE_CUBE,
-			new Collider(), new Collider(), new Collider(),
+			new Collider(), new Collider(new Vector2f(0.9f)), new Collider(),
 			false
 	) {
 		public static final float ROTATE_SPEED = 430.0f, ANGLE_FIX_SPEED = 24.0f, GRAVITY = 95.0f, MIN_VELOCITY = 26.0f;
@@ -47,9 +48,9 @@ public abstract class PlayerMode {
 	};
 	public static final PlayerMode SHIP = new PlayerMode(
 			Textures.PLAYERMODE_SHIP,
-			new Collider(new Vector2f(0.6f, 1.0f)),
-			new Collider(new Vector2f(0.6f, 1.0f)),
-			new Collider(new Vector2f(0.6f, 1.0f)),
+			new Collider(new Vector2f(0.6f, 0.5f)),
+			new Collider(new Vector2f(0.6f, 0.25f)),
+			new Collider(new Vector2f(0.6f, 0.5f)),
 			true
 	) {
 		public static final float ROTATION_SHARPNESS = 12.0f, MAX_ANGLE = 70.0f, ROTATE_SPEED = 6.0f, GRAVITY = 3.0f, MIN_VELOCITY = 14.0f;
@@ -64,11 +65,11 @@ public abstract class PlayerMode {
 
 		@Override
 		public void groundTap(Player player) {
-			fly(player);
+			fly(player, false);
 		}
 
 		@Override
-		public void fly(Player player) {
+		public void fly(Player player, boolean justStarted) {
 			player.velocity.y += GRAVITY * player.speed * (player.direction ? 1.0f : -1.0f) * World.time.getDelta();
 			player.velocity.y = Math.min(player.velocity.y, MIN_VELOCITY);
 		}
@@ -90,7 +91,7 @@ public abstract class PlayerMode {
 	};
 	public static final PlayerMode BALL = new PlayerMode(
 			Textures.PLAYERMODE_BALL,
-			new Collider(), new Collider(), new Collider(),
+			new Collider(), new Collider(new Vector2f(0.9f)), new Collider(),
 			true
 	) {
 		public static final float ROTATE_SPEED = 90.0f, FLY_ROTATE_SPEED = 45.0f, GRAVITY = 7.564f, MIN_VELOCITY = 26.0f;
@@ -139,6 +140,96 @@ public abstract class PlayerMode {
 			}
 		}
 	};
+	public static final PlayerMode SWING_COPTER = new PlayerMode(
+			Textures.PLAYERMODE_SWINGCOPTER,
+			new Collider(new Vector2f(0.6f, 1.0f)),
+			new Collider(new Vector2f(0.6f, 1.0f)),
+			new Collider(new Vector2f(0.6f, 1.0f)),
+			true
+	) {
+		public static final float ROTATION_SHARPNESS = 12.0f, MAX_ANGLE = 70.0f, ROTATE_SPEED = 6.0f, GRAVITY = 3.0f, MIN_VELOCITY = 14.0f;
+
+		@Override
+		public void initialize(Player player) {
+			super.initialize(player);
+			player.sprite.transform.size.set(1.05f);
+		}
+
+		@Override
+		public void update(Player player) {
+			super.update(player);
+
+			player.velocity.y += GRAVITY * player.speed * (player.direction ? -1.0f : 1.0f) * World.time.getDelta();
+			player.velocity.y = player.direction ? Math.max(player.velocity.y, -MIN_VELOCITY) : Math.min(player.velocity.y, MIN_VELOCITY);
+		}
+
+		@Override
+		public void fly(Player player, boolean justStarted) {
+			if (justStarted) {
+				player.direction = !player.direction;
+			}
+		}
+
+		@Override
+		public void onTrigger(Player player, PlacedBlock block) {
+			super.onTrigger(player, block);
+			player.direction = !player.direction;
+		}
+
+		@Override
+		public void animate(Player player) {
+			player.rotation = MathUtil.lerp(
+					player.rotation,
+					player.onGround ? 0.0f : Math.max(Math.min(player.velocity.y() * ROTATE_SPEED, MAX_ANGLE), -MAX_ANGLE),
+					ROTATION_SHARPNESS * World.time.getDelta()
+			);
+		}
+	};
+	public static final PlayerMode ROBOT = new PlayerMode(
+			Textures.PLAYERMODE_ROBOT,
+			new Collider(new Vector2f(0.6f, 1.0f)),
+			new Collider(new Vector2f(0.6f, 1.0f)),
+			new Collider(new Vector2f(0.6f, 1.0f)),
+			true
+	) {
+		public static final float ROTATION_SHARPNESS = 12.0f, MAX_ANGLE = 70.0f, ROTATE_SPEED = 6.0f, GRAVITY = 3.0f, MIN_VELOCITY = 14.0f;
+
+		@Override
+		public void initialize(Player player) {
+			super.initialize(player);
+			player.sprite.transform.size.set(1.05f);
+		}
+
+		@Override
+		public void update(Player player) {
+			super.update(player);
+
+			player.velocity.y += GRAVITY * player.speed * (player.direction ? -1.0f : 1.0f) * World.time.getDelta();
+			player.velocity.y = player.direction ? Math.max(player.velocity.y, -MIN_VELOCITY) : Math.min(player.velocity.y, MIN_VELOCITY);
+		}
+
+		@Override
+		public void fly(Player player, boolean justStarted) {
+			if (justStarted) {
+				player.direction = !player.direction;
+			}
+		}
+
+		@Override
+		public void onTrigger(Player player, PlacedBlock block) {
+			super.onTrigger(player, block);
+			player.direction = !player.direction;
+		}
+
+		@Override
+		public void animate(Player player) {
+			player.rotation = MathUtil.lerp(
+					player.rotation,
+					player.onGround ? 0.0f : Math.max(Math.min(player.velocity.y() * ROTATE_SPEED, MAX_ANGLE), -MAX_ANGLE),
+					ROTATION_SHARPNESS * World.time.getDelta()
+			);
+		}
+	};
 
 	public final int texture;
 
@@ -160,9 +251,10 @@ public abstract class PlayerMode {
 	}
 
 	public void groundTap(Player player) {}
-	public void fly(Player player) {}
+	public void fly(Player player, boolean justStarted) {}
 	public void release(Player player) {}
 	public void animate(Player player) {}
+	public void onTrigger(Player player, PlacedBlock block) {}
 
 	public void initialize(Player player) {
 		player.setTransform(new Transform(player.position, new Vector2f(1.0f), 0.0f));

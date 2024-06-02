@@ -35,6 +35,27 @@ public class Collider {
 				a.y() < b.w() && a.w() > b.y();
 	}
 
+	public float clipVelocityX(Transform transform, Transform otherTransform, Collider other, float velocity, ClipType clipType) {
+		Vector4f a = getTrueRange(transform);
+		Vector4f b = other.getTrueRange(otherTransform);
+
+		if(a.w() <= b.y() || a.y() >= b.w()) return velocity;
+		if(clipType == ClipType.DOWN || clipType == ClipType.BOTH) {
+			if(velocity < 0.0f && a.x() >= b.z()) {
+				float max = b.z() - a.x();
+				if(max > velocity) velocity = max;
+			}
+		}
+		if(clipType == ClipType.UP || clipType == ClipType.BOTH) {
+			if(velocity > 0.0f && a.z() <= b.x()) {
+				float max = b.x() - a.z();
+				if(max < velocity) velocity = max;
+			}
+		}
+
+		return velocity;
+	}
+
 	public float clipVelocityY(Transform transform, Transform otherTransform, Collider other, float velocity, ClipType clipType) {
 		Vector4f a = getTrueRange(transform);
 		Vector4f b = other.getTrueRange(otherTransform);

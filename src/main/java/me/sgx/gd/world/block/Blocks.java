@@ -80,7 +80,7 @@ public class Blocks {
 				MultipleUseModule.use(OrbBlock.MULTIPLE_USE_MODULE_CD_ID, placed);
 
 				player.direction = !player.direction;
-				player.jump(PlayerMode.DEFAULT_JUMP_HEIGHT * 1.13f);
+				player.jump(PlayerMode.DEFAULT_JUMP_HEIGHT * 0.638f * 2.0f);
 			}
 		}
 	};
@@ -167,6 +167,11 @@ public class Blocks {
 	public static final Block BLOCK_GRIDALL = new Block(
 			null, null, null,
 			Block.getTexture("block/grid_all")
+	);
+
+	public static final ModePortalBlock SWINGCOPTER_PORTAL = new ModePortalBlock(
+			PlayerMode.SWING_COPTER, new Collider(),
+			new Vector4f()
 	);
 
 	public static void register(Block block) {

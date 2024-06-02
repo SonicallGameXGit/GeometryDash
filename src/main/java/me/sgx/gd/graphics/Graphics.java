@@ -14,10 +14,17 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+
 public class Graphics {
 	private static final Mesh mesh = new Mesh(new MeshBuffer(new float[] {
 			-0.5f, -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f
 	}, 2), null);
+
+	private record RenderQueue(int texture, Vector4f uv, Vector4f color, Transform transform) {}
+	private static final HashMap<Integer, ArrayList<RenderQueue>> renderQueue = new HashMap<>();
 
 	private static final ShaderProgram shaderProgram = new ShaderProgram(), postShaderProgram = new ShaderProgram();
 	private static FrameBuffer frameBuffer;
@@ -75,8 +82,31 @@ public class Graphics {
 		postShaderProgram.setVector3("color", postColor);
 	}
 
-	public static void render() {
+	public static void renderDirect() {
 		mesh.render();
+	}
+	public static void render(int zIndex, int texture, Vector4f uv, Vector4f color, Transform transform) {
+		renderQueue.putIfAbsent(zIndex, new ArrayList<>());
+		renderQueue.get(zIndex).add(new RenderQueue(texture, uv, color, transform));
+    }
+	public static void renderAll() {
+		ArrayList<Integer> keys = new ArrayList<>(renderQueue.keySet());
+		Collections.sort(keys);
+
+		for (int zIndex : keys) {
+			ArrayList<RenderQueue> queues = renderQueue.get(zIndex);
+
+			for (RenderQueue queue : queues) {
+				setTexture(queue.texture);
+				setUv(queue.uv);
+				setColor(queue.color);
+				setTransform(queue.transform);
+
+				mesh.render();
+			}
+        }
+
+        renderQueue.clear();
 	}
 	public static void end() {
 		shaderProgram.unload();

@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
+import static me.sgx.gd.world.World.player;
 import static me.sgx.gd.world.World.time;
 
 public class Player extends Transform {
@@ -60,10 +61,12 @@ public class Player extends Transform {
 
 		if(pressed) {
 			if(onGround && !triggerBuffered) mode.groundTap(this);
-			else mode.fly(this);
+			else mode.fly(this, justPressed);
 		} else mode.release(this);
 
-		if(interact(triggeredBlocks)) triggerBuffered = false;
+		if(interact(triggeredBlocks)) {
+			triggerBuffered = false;
+		}
 
 		mode.update(this);
 	}
@@ -95,7 +98,9 @@ public class Player extends Transform {
 	private ArrayList<PlacedBlock> collideAndTriggerBlocks() {
 		onGround = false;
 
-		float scaledVelocityY = velocity.y() * time.getDelta();
+		Vector2f scaledVelocity = new Vector2f(velocity).mul(time.getDelta());
+
+		float scaledVelocityY = scaledVelocity.y;
 		float tempVelocityY = scaledVelocityY;
 
 		ArrayList<PlacedBlock> triggeredBlocks = new ArrayList<>();
@@ -110,13 +115,18 @@ public class Player extends Transform {
 				);
 			}
 
-			if(!DEBUG_INVINCIBLE && placedBlock.block.damageCollider != null && mode.damageCollider.intersects(
-					this, placedBlock.transform,
-					placedBlock.block.damageCollider
-			)) World.respawn(true);
+			if(!DEBUG_INVINCIBLE && placedBlock.block.damageCollider != null) {
+				Vector2f damageVelocity = new Vector2f(scaledVelocity);
+				damageVelocity.x = mode.damageCollider.clipVelocityX(this, placedBlock.transform, placedBlock.block.damageCollider, damageVelocity.x, Collider.ClipType.BOTH);
+				damageVelocity.y = mode.damageCollider.clipVelocityY(this, placedBlock.transform, placedBlock.block.damageCollider, damageVelocity.y, Collider.ClipType.BOTH);
+
+				if(damageVelocity.x != scaledVelocity.x || damageVelocity.y != scaledVelocity.y) {
+					World.respawn(true);
+				}
+			}
 
 			if(placedBlock.block.triggerCollider != null) {
-				if(mode.damageCollider.intersects(this, placedBlock.transform, placedBlock.block.triggerCollider)) {
+				if(mode.triggerCollider.intersects(this, placedBlock.transform, placedBlock.block.triggerCollider)) {
 					triggeredBlocks.add(placedBlock);
 				} else if(touchedTriggers.contains(placedBlock)) {
 					((Interactable) placedBlock.block).onRelease(placedBlock, this);
@@ -153,6 +163,7 @@ public class Player extends Transform {
 			}
 
 			if(triggerBuffered) {
+				mode.onTrigger(this, nearest);
 				((Interactable) nearest.block).onClick(nearest, this);
 				return true;
 			}

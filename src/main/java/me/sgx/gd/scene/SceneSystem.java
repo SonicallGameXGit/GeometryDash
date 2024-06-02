@@ -97,6 +97,7 @@ public class SceneSystem {
 			scene.update();
 			scene.render();
 
+			Graphics.renderAll();
 			Graphics.end();
 
 			Graphics.postBegin();
