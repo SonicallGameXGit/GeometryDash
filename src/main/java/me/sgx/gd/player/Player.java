@@ -33,7 +33,7 @@ public class Player extends Transform {
 	public float speed = SLOW_SPEED;
 
 	public boolean justPressed = false, pressed = false, direction = true;
-	private boolean triggerBuffered = false;
+	public boolean triggerBuffered = false;
 
 	public Player(Transform transform) {
 		super(new Transform(transform));
@@ -89,8 +89,8 @@ public class Player extends Transform {
 	}
 
 	private void handleInput() {
-		justPressed = Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_SPACE) || Mouse.isButtonJustPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT);
-		pressed = Keyboard.isKeyPressed(GLFW.GLFW_KEY_SPACE) || Mouse.isButtonPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+		justPressed = Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_SPACE) || Keyboard.isKeyJustPressed(GLFW.GLFW_KEY_UP) || Mouse.isButtonJustPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+		pressed = Keyboard.isKeyPressed(GLFW.GLFW_KEY_SPACE) || Keyboard.isKeyPressed(GLFW.GLFW_KEY_UP) || Mouse.isButtonPressed(GLFW.GLFW_MOUSE_BUTTON_LEFT);
 	}
 	private void move() {
 		velocity.x = speed;

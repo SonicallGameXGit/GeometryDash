@@ -63,7 +63,7 @@ public class Blocks {
 			if(MultipleUseModule.canUse(OrbBlock.MULTIPLE_USE_MODULE_CD_ID, placed)) {
 				MultipleUseModule.use(OrbBlock.MULTIPLE_USE_MODULE_CD_ID, placed);
 
-				player.jump(PlayerMode.DEFAULT_JUMP_HEIGHT * 0.638f * 0.5f);
+				player.jump(PlayerMode.DEFAULT_JUMP_HEIGHT * 0.638f);
 				player.direction = !player.direction;
 			}
 		}
@@ -80,7 +80,7 @@ public class Blocks {
 				MultipleUseModule.use(OrbBlock.MULTIPLE_USE_MODULE_CD_ID, placed);
 
 				player.direction = !player.direction;
-				player.jump(PlayerMode.DEFAULT_JUMP_HEIGHT * 0.638f * 2.0f);
+				player.jump(PlayerMode.DEFAULT_JUMP_HEIGHT * 0.889f);
 			}
 		}
 	};
@@ -171,6 +171,10 @@ public class Blocks {
 
 	public static final ModePortalBlock SWINGCOPTER_PORTAL = new ModePortalBlock(
 			PlayerMode.SWING_COPTER, new Collider(),
+			new Vector4f()
+	);
+	public static final ModePortalBlock ROBOT_PORTAL = new ModePortalBlock(
+			PlayerMode.ROBOT, new Collider(),
 			new Vector4f()
 	);
 
