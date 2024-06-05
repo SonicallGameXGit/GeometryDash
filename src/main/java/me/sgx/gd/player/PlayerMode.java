@@ -261,6 +261,64 @@ public abstract class PlayerMode {
 		}
 	};
 
+	public static final PlayerMode SPIDER = new PlayerMode(
+			Textures.PLAYERMODE_SPIDER,
+			new Collider(new Vector2f(1.0f, 0.7f)),
+			new Collider(new Vector2f(0.9f, 0.0f)),
+			new Collider(new Vector2f(1.0f, 0.7f)),
+			true
+	) {
+		public static final float GRAVITY = 95.0f, MIN_VELOCITY = 24.0f;
+
+		@Override
+		public void initialize(Player player) {
+			super.initialize(player);
+			player.cd.add(true); // Can flip
+
+			player.sprite.transform.size.set(1.15f);
+		}
+
+		@Override
+		public void update(Player player) {
+			super.update(player);
+
+			boolean canStopVelocity = Math.abs(player.velocity.y) <= MIN_VELOCITY;
+
+			player.velocity.y -= GRAVITY * (player.direction ? 1.0f : -1.0f) * World.time.getDelta();
+			if(canStopVelocity) {
+				player.velocity.y = player.direction ?
+						Math.max(player.velocity.y(), -MIN_VELOCITY) :
+						Math.min(player.velocity.y(), MIN_VELOCITY);
+			}
+
+			player.sprite.transform.size.y = Math.abs(player.sprite.transform.size.y) * (player.direction ? 1.0f : -1.0f);
+		}
+
+		@Override
+		public void onTrigger(Player player, PlacedBlock block) {
+			super.onTrigger(player, block);
+			player.cd.set(0, false);
+		}
+
+		@Override
+		public void groundTap(Player player) {
+			super.groundTap(player);
+
+			if ((boolean)player.cd.get(0)) {
+				player.velocity.y = player.direction ? 999999.0f : -999999.0f;
+				player.direction = !player.direction;
+
+				player.cd.set(0, false);
+			}
+		}
+
+		@Override
+		public void release(Player player) {
+			super.release(player);
+			player.cd.set(0, true);
+		}
+	};
+
 	public final int texture;
 
 	public final Collider resolveCollider, damageCollider, triggerCollider;

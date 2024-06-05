@@ -13,7 +13,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-import static me.sgx.gd.world.World.player;
 import static me.sgx.gd.world.World.time;
 
 public class Player extends Transform {
@@ -69,6 +68,9 @@ public class Player extends Transform {
 		}
 
 		mode.update(this);
+		if(this.position.y >= 100.0f) {
+			World.respawn(true);
+		}
 	}
 
 	public void jump(float height) {
@@ -116,11 +118,16 @@ public class Player extends Transform {
 			}
 
 			if(!DEBUG_INVINCIBLE && placedBlock.block.damageCollider != null) {
-				Vector2f damageVelocity = new Vector2f(scaledVelocity);
+				Vector2f damageVelocity = new Vector2f(scaledVelocity.x, tempVelocityY);
 				damageVelocity.x = mode.damageCollider.clipVelocityX(this, placedBlock.transform, placedBlock.block.damageCollider, damageVelocity.x, Collider.ClipType.BOTH);
-				damageVelocity.y = mode.damageCollider.clipVelocityY(this, placedBlock.transform, placedBlock.block.damageCollider, damageVelocity.y, Collider.ClipType.BOTH);
 
-				if(damageVelocity.x != scaledVelocity.x || damageVelocity.y != scaledVelocity.y) {
+				if(damageVelocity.x != scaledVelocity.x) {
+					World.respawn(true);
+				}
+
+				damageVelocity.y = mode.damageCollider.clipVelocityY(new Transform(new Vector2f(this.position.x + damageVelocity.x, this.position.y), this.size, this.rotation, this.anchor), placedBlock.transform, placedBlock.block.damageCollider, damageVelocity.y, Collider.ClipType.BOTH);
+
+				if(damageVelocity.y != tempVelocityY) {
 					World.respawn(true);
 				}
 			}

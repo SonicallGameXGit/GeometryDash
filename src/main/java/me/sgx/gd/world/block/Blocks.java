@@ -177,6 +177,10 @@ public class Blocks {
 			PlayerMode.ROBOT, new Collider(),
 			new Vector4f()
 	);
+	public static final ModePortalBlock SPIDER_PORTAL = new ModePortalBlock(
+			PlayerMode.SPIDER, new Collider(),
+			new Vector4f()
+	);
 
 	public static void register(Block block) {
 		blocks.add(block);
